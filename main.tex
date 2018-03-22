@@ -1,0 +1,247 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{todonotes}
+\newcounter{numerotodo}
+\newcommand{\TODO}[1]{\refstepcounter{numerotodo}\todo[inline]{\thenumerotodo) #1}}
+\usepackage{geometry}
+ \geometry{
+      a4paper,
+       total={170mm,257mm},
+        left=20mm,
+         top=20mm,
+          }
+
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,skins}
+\lstdefinestyle{mystyle}{
+     basicstyle=\ttfamily\color{white},
+     langage=bash,
+     tabsize=1,
+     keywordstyle=\color{blue}\bf,
+     showstringspaces=false,
+     morekeywords={mount, umount, ls, 
+	 		cat, adduser, chown, chgrp, init, fuser}
+ }
+\newtcblisting{mylisting}{
+      enhanced,                             %%% needed for shadow
+      arc=2mm,
+      top=0mm,
+      bottom=0mm,
+      left=0mm,
+      right=0mm,
+      boxrule=0pt,
+      colback=black,
+      %shadow={5mm}{-3mm}{0mm}{fill=black!50!white,opacity=0.5},             %%% here for shadow  and adjust as you like
+      listing only,
+      listing options={style=mystyle},
+      hbox
+}
+
+
+\begin{document}
+\begin{center}
+\huge{Projet 1 : InitDev}
+\end{center}
+=============================================================
+
+\section{Introduction}
+Au début de chaque projet de développement, l'acteur (ingénieur, étudiant ou autre) doit procéder à une organisation de son projet et appliquer un ensemble de pré-configurations comme : l'initialisation d'un dépôt git, l'ajout d'un fichier ".gitignore", la désignation d'une licence, la création d'un premier fichier source dans le dossier du projet avec un code minimal selon le type du projet (C, Latex, python ou autre), etc.
+
+D'un point de vue programmation, toutes ces taches peuvent être automatisées avec un programme. Nous voulons par le projet "initdev" implémenter un outil d'initialisation de projets. 
+
+\section{Objectifs}
+\begin{itemize}
+\item Créer l'application << initdev >> qui crée un nouveau projet avec les pré-configurations données dans la partie "Fonctionnalités" \ref{sec:fct}.
+\item Créer un script d'installation pour l'application << initdev >> suivant les instructions données dans la partie "Installation" \ref{sec:insl}. 
+\end{itemize}
+
+\section{Structure du projet \emph{initdev}}
+Il est nécessaire d'organiser le répertoire du programme << initdev >>. Nous allons décrire l'arborescence du dossier de l'application.
+
+Le projet doit contenir l'architecture de fichiers suivante : 
+\begin{itemize}
+  \item Un répertoire "bin" : contient l'exécutable du programme << initdev >> (si le langage utilisé est le C/C++. Dans le cas d'un script shell ou d'un programme python, il faut laisser le dossier vide).
+  \item Un répertoire "licenses" : contient des templates de licences. Ces fichiers nous servent d'exemples à copier à chaque fois dans les projets créés par << initdev >>.
+  \item Un répertoire "makfiles" : contient des templates de fichiers de type makefile à copier à chaque fois dans les projets créés par << initdev >>. 
+  \item Un répertoire "sources" : contient le code minimal d'un fichier source d'un langage donné. 
+  \item Un fichier "main.sh" (ou main.c pour le langage c, ou main.py pour le langage python) : contient le code source de l'application << initdev >>. 
+  \item Un fichier "install.sh" : contient un script d'installation de l'application << initdev >> sous Linux.
+\end{itemize}
+
+
+\section{Fonctionnalités}
+\label{sec:fct}
+\subsection{Fonctionnalités de base}
+Le programme << initdev >> doit se lancer avec au moins un paramètre en entrée qui représente le nom du projet. La création du projet se fait en tapant dans la console, par exemple : 
+  \begin{center}
+    initdev nom\_projet
+  \end{center}
+  
+  Le programme doit effectuer les opérations suivantes :
+  \begin{itemize}
+    \item Créer un répertoire portant le nom du projet (exemple : "nom\_projet").
+    \item Créer un fichier vide "main" dans le  répertoire du projet.
+    \item Créer un fichier vide "LICENSE" dans le  répertoire du projet.
+    \item Créer un fichier vide "Makefile" dans le  répertoire du projet.
+    \item Le programme se termine avec un retour $0$ (succès).
+  \end{itemize}
+
+  Si l'utilisateur du programme exécute le programme sans donner le nom du projet, le programme doit effectuer les opérations suivantes:
+  \begin{itemize}
+    \item  Le message d'erreur suivant doit s'afficher : "Expected arguments, please check the help : initdev --help".
+    \item Le programme se termine avec un retour $1$ (échec).
+    
+    
+    \subsection{Le help de l'application}
+    L'utilisateur de l'application << initdev >> peut consulter le Help de l'application en tapant :
+    \begin{center}
+      initdev --help
+    \end{center}
+    L'application doit lui afficher en retour un help comportant les sections suivantes :
+    \begin{itemize}
+      \item Name : Afficher le nom de l'application et une petite description.
+      \item Syntax: Afficher la syntaxe d'utilisation de la commande initdev.
+      \item args: Lister les arguments et donner une description de chaque argument.
+      \item author: Afficher le nom et l'email de l'auteur de l'application. 
+    \end{itemize}
+
+\end{itemize}
+
+
+
+\subsection{Fonctionnalités avancées}
+Nous allons dans cette partie améliorer l'application << initdev >> en ajoutant des fonctionnalités avancées. Cela s'interprète par l'ajout d'arguments à notre programme.
+
+
+\subsubsection{Type de projet}
+  Cette fonctionnalité permet de préciser le type de projet que l'utilisateur souhaite entreprendre. Par exemple, en tapant :
+  \begin{center}
+    initdev nom\_projet --C
+  \end{center}
+  l'application doit créer un projet pour une application en langage C avec un fichier main.c contenant un code minimal.
+
+  Liste des types de projet pris en charge par l'application
+  \begin{center}
+  \begin{tabular}{l|l}
+    Argument & Type \\ \hline
+    --C & Projet en langage C \\
+    --CPP ou --C++ & Projet en langage C++ \\
+    --Py & Projet en langage python  \\
+    --Latex & Projet de rédaction en Latex \\
+    --BEAMER & Projet de présentation en BEAMER \\
+  \end{tabular}
+\end{center}
+
+Si l'utilisateur du programme précise le type du projet, le programme doit effectuer les opérations suivantes :
+  \begin{itemize}
+    \item Créer un répertoire portant le nom du projet (exemple : "nom\_projet").
+    \item Copier le fichier texte contenant le code minimal du langage demandé dans un fichier "main.*" dans le répertoire du projet, en s'assurant de mettre la bonne extension au fichier "main".
+    \item Créer un fichier vide "LICENSE" dans le répertoire du projet.
+    \item Créer un fichier vide "Makefile" dans le répertoire du projet.
+    \item Le programme se termine avec un retour $0$ (succès).
+  \end{itemize}
+
+  Si l'utilisateur du programme se trompe dans le nom du type de langage ou que le langage n'est pas pris en charge. Le programme doit réaliser les opérations suivantes:
+  \begin{itemize}
+    \item Afficher le message d'erreur suivant : "Uknown arguments, please check the help : initdev --help".
+    \item Le programme se termine avec un retour $1$ (échec). 
+\end{itemize}
+
+
+\subsubsection{Type de licence}
+  Cette fonctionnalité permet de préciser le type de licence que l'utilisateur souhaite avoir dans son projet. Par exemple, en tapant :
+  \begin{center}
+    initdev nom\_projet --GPL
+  \end{center}
+  l'application doit créer un projet avec un fichier LICENSE contenant les termes de la licence GPL.
+
+  Liste des licences prises en charge par l'application:
+  \begin{center}
+  \begin{tabular}{l|l}
+    Argument & Nom de la licene \\ \hline
+    --GPL & GENERAL PUBLIC LICENSE \\
+    --MIT & Licence MIT \\
+  \end{tabular}
+\end{center}
+
+Si l'utilisateur du programme précise la licence, le programme doit effectuer les opérations suivantes :
+  \begin{itemize}
+    \item Créer un répertoire portant le nom du projet (exemple : "nom\_projet").
+    \item Créer un fichier vide "main" dans le répertoire du projet.
+    \item Copier le fichier texte contenant les termes de la licence demandée par l'utilisateur dans un fichier "LICENSE" dans le  répertoire du projet.
+    \item Créer un fichier vide "Makefile" dans le  répertoire du projet.
+    \item Le programme se termine avec un retour $0$ (succès).
+  \end{itemize}
+
+  Si l'utilisateur du programme se trompe dans le nom de la licence ou que la licence n'est pas prise en charge. Le programme doit réaliser les opérations suivantes:
+  \begin{itemize}
+    \item Afficher le message d'erreur suivant : "Uknown arguments, please check the help : initdev --help".
+    \item Le programme se termine avec un retour $1$ (échec). 
+\end{itemize}
+
+\subsubsection{Initialisation d'un dépot git}
+  Cette fonctionnalités permet d'initialisé un dépot git et d'ajouter un fichier ".gitignore" qui sert de filtre pour git. Cela dit, le fichier ".gitignore" dépend du type de projet, donc, l'utilisateur doit préciser le type de projet. Par exemple, en tapant :
+  \begin{center}
+    initdev nom\_projet --C --git
+  \end{center}
+  l'application doit créer un projet de type C, ajouter dans le répertoire du projet le fichier ".gitignore" associé au langage C et initialiser un dépôt git.
+
+
+Si l'utilisateur du programme précise le type du projet et demande une initialisation d'un dépôt git, le programme doit effectuer les opérations suivantes :
+  \begin{itemize}
+    \item Créer un répertoire portant le nom du projet (exemple : "nom\_projet").
+    \item Copier le fichier texte contenant le code minimal du langage demandé dans un fichier "main.*" dans le  répertoire du projet en s'assurant de mettre la bonne extension au fichier "main".
+    \item Créer un fichier vide "LICENSE" dans le répertoire du projet.
+    \item Créer un fichier vide "Makefile" dans le  répertoire du projet.
+    \item Copier le fichier ".gitignore" approprié au langage du projet dans un fichier ".gitignore" dans le  répertoire du projet.
+    \item Initialiser un dépôt git : Lancer la commande `git init` dans le répertoire du projet.
+    \item Le programme se termine avec un retour $0$ (succès).
+  \end{itemize}
+
+  Si l'utilisateur demande la création d'un dépôt git sans préciser le langage du projet, le programme doit exécuter les opérations suivantes :
+  \begin{itemize}
+    \item  Afficher le message d'erreur suivant : "You must set project type, please check the help : initdev --help".
+    \item Le programme se termine avec un retour $1$ (échec). 
+\end{itemize}
+
+\subsubsection{Enchaînement des fonctionnalités}
+  Il serait intéressant de pouvoir lancer plusieurs fonctionnalités à la fois. Donc, l'utilisateur peut combiner les fonctionnalités décrites avant. Par exemple, en tapant :
+  \begin{center}
+    initdev mon\_projet --GPL --Latex --git
+  \end{center}
+  L'application serait en mesure de créer un projet de rédaction en langage latex sous licence GPL avec une initialisation d'un dépôt git et un fichier .gitignore pour ignorer les fichiers de compilation.
+
+\section{Installation de InitDev}
+\label{sec:insl}
+Dans cette partie nous allons implémenter l'installation de notre programme sur un système linux. Pour le faire nous devons d'abord copier les sources puis configurer notre système pour reconnaître notre programme à chaque fois qu'on tape << initdev >> dans un terminal.
+
+\subsection{Déplacement des fichiers sources du programme initdev}   
+La première chose à faire est de mettre notre programme dans le home de l'utilisateur. Nous allons donc créer un répertoire caché ".initdev" dans le répertoire personnel de l'utilisateur et y copier tous les fichiers et dossiers du projet initdev. 
+
+Par exemple, si l'utilisateur s'appelle toto, on doit créer le dossier /home/toto/.initdev et y mettre les dossiers bin, makefiles, gitignore et sources ainsi que leurs contenus et le fichier source initdev. 
+
+Attention: si le répertoire existe déjà, un message d'erreur doit être retourné à l'utilisateur et l'installation doit s'arrêter avec un retour 1.
+
+\subsection{Configuration de linux}
+
+Afin que l'utilisateur puisse utiliser l'application initdev depuis son terminal, on doit ajouter le chemin du source de l'application initdev à la variable d'environnement PATH. 
+
+On doit sauvegarder la modification de la variable PATH dans le fichier d'initialisation du shell par défaut i.e. si l'utilisateur utilise bash comme shell par défaut, on doit éditer le fichier .bashrc qui se trouve dans le home de l'utilisateur. Par contre, si l'utilisateur utilise du zsh, on doit éditer le fichier .zshrc qui se trouve aussi dans le home de l'utilisateur. Cette édition consite à faire un export de la variable PATH.
+
+Attention: Il faut vérifier que la commande initdev n'existe pas déjà. Si c'est le cas, il faut renommer le fichier initdev à initdev2 et refaire le test.
+
+\section*{A propos du projet}
+Imad Eddine BOUSBAA (ibousbaa@usthb.dz), année 2018;
+
+Les sources de ce projet sont sur le dépot :
+
+  \begin{center}\url{github.com/bimade/initdev_cc}\end{center}
+
+  Ce projet \emph{est} sous licence \href{https://www.gnu.org/licenses/gpl-3.0.html}{GNU GENERAL PUBLIC LICENSE}.
+\end{document}
